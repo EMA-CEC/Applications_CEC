@@ -140,9 +140,44 @@ function analyzeSensitiveReceptors(buffer, shape) {
       const feature = l.toGeoJSON();
       if (!feature.geometry) return;
 
-      const intersects = turf.booleanIntersects(shape, feature);
-      const distance = intersects ? "within boundaries" :
-        Math.round(turf.distance(turf.center(shape), turf.center(feature), { units: "kilometers" }) * 1000) + " m";
+const intersects = turf.booleanIntersects(shape, feature);
+let distance = "within boundaries";
+
+if (!intersects && turf.booleanIntersects(buffer, feature)) {
+  try {
+    const featureBoundary = turf.polygonToLine(feature);
+
+    if (shape.geometry.type === "Point") {
+      const d = turf.pointToLineDistance(shape, featureBoundary, { units: "kilometers" });
+      distance = Math.round(d * 1000) + " m";
+    } else if (shape.geometry.type === "LineString") {
+      const shapePoints = turf.explode(shape);
+      let minDist = Infinity;
+      shapePoints.features.forEach(p => {
+        const d = turf.pointToLineDistance(p, featureBoundary, { units: "kilometers" });
+        if (d < minDist) minDist = d;
+      });
+      distance = Math.round(minDist * 1000) + " m";
+    } else if (shape.geometry.type === "Polygon" || shape.geometry.type === "MultiPolygon") {
+      const shapeBoundary = turf.polygonToLine(shape);
+      const shapePoints = turf.explode(shapeBoundary);
+      const featurePoints = turf.explode(featureBoundary);
+      let minDist = Infinity;
+      shapePoints.features.forEach(p1 => {
+        featurePoints.features.forEach(p2 => {
+          const d = turf.distance(p1, p2, { units: "kilometers" });
+          if (d < minDist) minDist = d;
+        });
+      });
+      distance = Math.round(minDist * 1000) + " m";
+    } else {
+      distance = "Unsupported geometry";
+    }
+  } catch (err) {
+    console.error("❌ Distance calculation error:", err);
+    distance = "Error";
+  }
+}
 
       if (intersects || turf.booleanIntersects(buffer, feature)) {
         let label = name;
