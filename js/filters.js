@@ -26,10 +26,7 @@ function applyFilters() {
     const beforeEnd = !endDate || itemDate <= endDate;
 
     const statusMatch = !status || item["Application Determination"] === status;
-    const activityMatch = !activity || item["Designated Activity"]
-      .split(/[\s,;]+/)
-      .map(code => code.trim())
-      .includes(activity);    
+    const activityMatch = !activity || new RegExp(`(^|[^a-zA-Z0-9])${activity.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}(?=$|[^a-zA-Z0-9])`).test(item["Designated Activity"]);    
 
     const searchFields = [
       "Applicant",
