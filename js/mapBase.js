@@ -97,29 +97,50 @@ function initDrawTools() {
     }
   });
 
-  document.getElementById("drawPointBtn").addEventListener("click", () => {
-  if (activeDrawer) activeDrawer.disable();
-  pointDrawer.enable();
-  activeDrawer = pointDrawer;
+document.getElementById("drawPointBtn").addEventListener("click", () => {
+  if (activeDrawer === pointDrawer) {
+    pointDrawer.disable();
+    activeDrawer = null;
+  } else {
+    if (activeDrawer) activeDrawer.disable();
+    pointDrawer.enable();
+    activeDrawer = pointDrawer;
+  }
 });
 
-  document.getElementById("drawPolygonBtn").addEventListener("click", () => {
-  if (activeDrawer) activeDrawer.disable();
-  polygonDrawer.enable();
-  activeDrawer = polygonDrawer;
+document.getElementById("drawPolygonBtn").addEventListener("click", () => {
+  if (activeDrawer === polygonDrawer) {
+    polygonDrawer.disable();
+    activeDrawer = null;
+  } else {
+    if (activeDrawer) activeDrawer.disable();
+    polygonDrawer.enable();
+    activeDrawer = polygonDrawer;
+  }
 });
 
-  document.getElementById("drawRectangleBtn").addEventListener("click", () => {
-  if (activeDrawer) activeDrawer.disable();
-  rectangleDrawer.enable();
-  activeDrawer = rectangleDrawer;
+document.getElementById("drawRectangleBtn").addEventListener("click", () => {
+  if (activeDrawer === rectangleDrawer) {
+    rectangleDrawer.disable();
+    activeDrawer = null;
+  } else {
+    if (activeDrawer) activeDrawer.disable();
+    rectangleDrawer.enable();
+    activeDrawer = rectangleDrawer;
+  }
 });
 
-  document.getElementById("drawPolylineBtn").addEventListener("click", () => {
-  if (activeDrawer) activeDrawer.disable();
-  polylineDrawer.enable();
-  activeDrawer = polylineDrawer;
+document.getElementById("drawPolylineBtn").addEventListener("click", () => {
+  if (activeDrawer === polylineDrawer) {
+    polylineDrawer.disable();
+    activeDrawer = null;
+  } else {
+    if (activeDrawer) activeDrawer.disable();
+    polylineDrawer.enable();
+    activeDrawer = polylineDrawer;
+  }
 });
+
 
   // Toggle edit mode
   document.getElementById("editDrawBtn").addEventListener("click", () => {
@@ -177,6 +198,7 @@ function initDrawTools() {
   map.on(L.Draw.Event.CREATED, function (e) {
     const layer = e.layer;
     activeDrawer = null;
+	  
     if (layer instanceof L.Marker) {
       const yellowIcon = new L.Icon({
         iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-yellow.png",
