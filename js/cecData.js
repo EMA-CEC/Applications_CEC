@@ -2,6 +2,8 @@
 
 let markers, heatLayer, currentView = "cluster";
 window.allCECData = []; // Store original dataset and expose globally
+window.filteredCECData = []; // filtered results for Spatial analysis CEC list
+
 
 // Load and display CEC Applications
 function loadCECData() {
@@ -9,6 +11,7 @@ function loadCECData() {
     .then(res => res.json())
     .then(data => {
       allCECData = data;
+	  filteredCECData = data.slice();
 
       // Populate dropdowns with unique values (from sheet)
       const statuses = [...new Set(data.map(item => item["Application Determination"]).filter(Boolean))].sort();
